@@ -9,9 +9,8 @@ function createMap(){
 
 	//add OSM base tilelayer
     //https://leaflet-extras.github.io/leaflet-providers/preview/
-	L.tileLayer('http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
 }).addTo(map);
 
     getData(map);
@@ -31,7 +30,7 @@ function createMap(){
 //calculate the radius of each proportional symbol
 function calcPropRadius(attValue) {
     //scale factor to adjust symbol size evenly
-    var scaleFactor = 50;
+    var scaleFactor = 35;
     //area based on attribute value and scale factor
     var area = attValue * scaleFactor;
     //radius calculated based on area
@@ -40,37 +39,94 @@ function calcPropRadius(attValue) {
     return radius;
 };
 
-function createPropSymbols(data, map){
+function pointToLayer(feature, latlng){
     //create marker options
 
     var attribute = "2010(gal)";
 
-    var geojsonMarkerOptions = {
-        radius: 8,
-        fillColor: "#ff7800",
-        color: "#000",
+    var options = {
+        // radius: 8,
+        fillColor: "#FF6347 ",
+        color: "#FFFFFF",
         weight: 1,
         opacity: 1,
         fillOpacity: 0.8
 
-
     };
 
     //create a Leaflet GeoJSON layer and add it to the map
-    L.geoJson(data, {
-        pointToLayer: function (feature, latlng) {
 
-            var attValue = Number(feature.properties[attribute]);
+        var attValue = Number(feature.properties[attribute]);
 
-            //Step 6: Give each feature's circle marker a radius based on its attribute value
-            geojsonMarkerOptions.radius = calcPropRadius(attValue);
+         //Step 6: Give each feature's circle marker a radius based on its attribute value
+         options.radius = calcPropRadius(attValue);
+
+         //create circle marker layer
+         var layer = L.circleMarker(latlng, options);
+
+         
             
+        //build popup content
+         var panelContent = "<p><b>City:</b> " + feature.properties.City + "</p>";
 
-            return L.circleMarker(latlng, geojsonMarkerOptions);
-        }
+         //add formatted attribute to panel content string
+         var year = attribute.split("(")[0];
+         panelContent += "<p><b>Gas price in " + year + ":</b> " + "$" + feature.properties[attribute].toFixed(2) + " per gallon</p>";
+         
+         //popup content is now just the city name
+         var popupContent = feature.properties.City;
 
+         //bind to circle marker
+        layer.bindPopup(popupContent, {
+            offset: new L.Point(0,-options.radius),
+            closeButton: false
+        });
+
+        //event listeners to open popup on hover
+        layer.on({
+            mouseover: function(){
+                this.openPopup();
+            },
+            mouseout: function(){
+                this.closePopup();
+            },
+            click: function(){
+                $("#panel").html(panelContent);
+            }
+        });
+
+        //return the circle marker to the L.geoJson pointToLayer option
+        return layer;
+    
+};
+
+//Add circle markers for point features to the map
+function createPropSymbols(data, map){
+    //create a Leaflet GeoJSON layer and add it to the map
+    L.geoJson(data, {
+        pointToLayer: pointToLayer
     }).addTo(map);
 };
+
+//create sequence controls
+function createSequenceControls(map){
+    //create range input element (slider)
+    $('#panel').append('<input class="range-slider" type="range">');
+
+    //set slider attributes
+    $('.range-slider').attr({
+        max: 5,
+        min: 0,
+        value: 0,
+        step: 1
+    });
+    $('#panel').append('<button class="skip" id="reverse">Reverse</button>');
+    $('#panel').append('<button class="skip" id="forward">Skip</button>');
+    $('#reverse').html('<img src="img/reverse.png">');
+    $('#forward').html('<img src="images/forward.png">');
+};
+    
+
 
  //retrieves data and places it on map
 function getData(map){
@@ -80,6 +136,7 @@ function getData(map){
         success: function(response){
             //call function to create proportional symbols
             createPropSymbols(response, map);
+            createSequenceControls(map);
         }
     });
 };

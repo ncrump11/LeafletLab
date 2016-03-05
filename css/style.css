@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 #map {
     height: 400px;
     width: 70%;
+=======
+/* This is my CSS File*/
+#map {
+    height: 400px;
+    width: 80%;
+>>>>>>> origin/master
     display: inline-block;
 }
 
 #panel {
+<<<<<<< HEAD
     width: 23%;
     padding: 20px;
     display: inline-block;
@@ -23,6 +31,12 @@
 
 #reverse{
 	float: left;
+=======
+    width: 16%;
+    padding: 20px;
+    display: inline-block;
+    vertical-align: top;
+>>>>>>> origin/master
 }
 
 .leaflet-popup-content p {

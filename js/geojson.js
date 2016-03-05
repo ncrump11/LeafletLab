@@ -9,7 +9,11 @@ function createMap(){
 
     //add OSM base tilelayer
     //https://leaflet-extras.github.io/leaflet-providers/preview/
+<<<<<<< HEAD
     L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+=======
+	L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+>>>>>>> origin/master
     attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
 }).addTo(map);
 
@@ -29,12 +33,19 @@ function calcPropRadius(attValue) {
     return radius;
 };
 
+<<<<<<< HEAD
 function pointToLayer(feature, latlng, attributes){
+=======
+function pointToLayer(feature, latlng){
+>>>>>>> origin/master
     //create marker options
 
     var attribute = attributes[0];
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
     var options = {
         // radius: 8,
         fillColor: "#FF6347 ",
@@ -48,6 +59,7 @@ function pointToLayer(feature, latlng, attributes){
     //create a Leaflet GeoJSON layer and add it to the map
 
         var attValue = Number(feature.properties[attribute]);
+<<<<<<< HEAD
 
          //Step 6: Give each feature's circle marker a radius based on its attribute value
          options.radius = calcPropRadius(attValue);
@@ -60,12 +72,27 @@ function pointToLayer(feature, latlng, attributes){
         //build popup content
          var panelContent = "<p><b>City:</b> " + feature.properties.City + "</p>";
 
+=======
+
+         //Step 6: Give each feature's circle marker a radius based on its attribute value
+         options.radius = calcPropRadius(attValue);
+
+         //create circle marker layer
+         var layer = L.circleMarker(latlng, options);
+
+         
+            
+        //build popup content
+         var panelContent = "<p><b>City:</b> " + feature.properties.City + "</p>";
+
+>>>>>>> origin/master
          //add formatted attribute to panel content string
          var year = attribute.split("(")[0];
          panelContent += "<p><b>Gas price in " + year + ":</b> " + "$" + feature.properties[attribute].toFixed(2) + " per gallon</p>";
          
          //popup content is now just the city name
          var popupContent = feature.properties.City;
+<<<<<<< HEAD
 
          //bind to circle marker
         layer.bindPopup(panelContent, {
@@ -107,6 +134,43 @@ function createPropSymbols(data, map, attributes){
 
 //create sequence controls
 function createSequenceControls(map, attributes){
+=======
+
+         //bind to circle marker
+        layer.bindPopup(popupContent, {
+            offset: new L.Point(0,-options.radius),
+            closeButton: false
+        });
+
+        //event listeners to open popup on hover
+        layer.on({
+            mouseover: function(){
+                this.openPopup();
+            },
+            mouseout: function(){
+                this.closePopup();
+            },
+            click: function(){
+                $("#panel").html(panelContent);
+            }
+        });
+
+        //return the circle marker to the L.geoJson pointToLayer option
+        return layer;
+    
+};
+
+//Add circle markers for point features to the map
+function createPropSymbols(data, map){
+    //create a Leaflet GeoJSON layer and add it to the map
+    L.geoJson(data, {
+        pointToLayer: pointToLayer
+    }).addTo(map);
+};
+
+//create sequence controls
+function createSequenceControls(map){
+>>>>>>> origin/master
     //create range input element (slider)
     $('#panel').append('<input class="range-slider" type="range">');
 
@@ -117,6 +181,7 @@ function createSequenceControls(map, attributes){
         value: 0,
         step: 1
     });
+<<<<<<< HEAD
 
     $('#panel').append('<button class="skip" id="reverse">Reverse</button>');
     $('#panel').append('<button class="skip" id="forward">Skip</button>');
@@ -201,6 +266,15 @@ function updatePropSymbols(map, attribute){
         };
     });
 };
+=======
+    $('#panel').append('<button class="skip" id="reverse">Reverse</button>');
+    $('#panel').append('<button class="skip" id="forward">Skip</button>');
+    $('#reverse').html('<img src="img/reverse.png">');
+    $('#forward').html('<img src="images/forward.png">');
+};
+    
+
+>>>>>>> origin/master
 
  //retrieves data and places it on map
 function getData(map){
@@ -209,11 +283,16 @@ function getData(map){
         dataType: "json",
         success: function(response){
             //call function to create proportional symbols
+<<<<<<< HEAD
             var attributes = processData(response);
 
             createPropSymbols(response, map, attributes);
             createSequenceControls(map, attributes);
             
+=======
+            createPropSymbols(response, map);
+            createSequenceControls(map);
+>>>>>>> origin/master
         }
     });
     $.ajax("data/oil.geojson",{

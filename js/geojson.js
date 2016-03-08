@@ -1,5 +1,3 @@
-// Map of GeoJSON dtaa from MegaCities.GeoJSON
-
 //instantiate leaflet Map
 function createMap(){
     var map= L.map('map',{
@@ -85,23 +83,112 @@ function pointToLayer(feature, latlng, attributes){
     return layer;
 };
 
+//Calculate the max, mean, and min values for a given attribute
+function getCircleValues(map, attribute){
+    //start with min at highest possible and max at lowest possible number
+    var min = Infinity,
+        max = -Infinity;
+
+    map.eachLayer(function(layer){
+        //get the attribute value
+        if (layer.feature){
+            var attributeValue = Number(layer.feature.properties[attribute]);
+
+            //test for min
+            if (attributeValue < min){
+                min = attributeValue;
+            };
+
+            //test for max
+            if (attributeValue > max){
+                max = attributeValue;
+            };
+        };
+    });
+
+    //set mean
+    var mean = (max + min) / 2;
+
+    //return values as an object
+    return {
+        max: max,
+        mean: mean,
+        min: min
+    };
+};
+
+//Update the legend with new attribute
+function updateLegend(map, attribute){
+    //create content for legend
+    var year = attribute.split("(")[0];
+    var content = "Gas Price";
+
+    //replace legend content
+    $('#temporal-legend').html(content);
+    //get the max, mean, and min values as an object
+    var circleValues = getCircleValues(map, attribute);
+
+    for (var key in circleValues){
+        //get the radius
+        var radius = calcPropRadius(circleValues[key]);
+
+        //Step 3: assign the cy and r attributes
+        $('#'+key).attr({
+            cy: 39 - radius,
+            r: radius
+        });
+        
+      //Step 4: add legend text
+        $('#'+key+'-text').text("$" + Math.round(circleValues[key]*100)/100);
+
+    };
+};
+
 function createLegend(map, attributes){
     var LegendControl = L.Control.extend({
         options: {
-            position: 'bottomleft'
+            position: 'bottomright'
         },
 
         onAdd: function (map) {
             // create the control container with a particular class name
             var container = L.DomUtil.create('div', 'legend-control-container');
 
-            //PUT YOUR SCRIPT TO CREATE THE TEMPORAL LEGEND HERE
+            //add temporal legend div to container
+            $(container).append('<div id="temporal-legend">')
+
+            //Step 1: start attribute legend svg string
+            var svg = '<svg id="attribute-legend" >';
+
+            //object to base loop on
+            var circles = {
+                max: 20,
+                mean: 40,
+                min: 60
+            };
+
+            //loop to add each circle and text to svg string
+            for (var circle in circles){
+                //circle string
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#F47821" fill-opacity="0.8" stroke="#000000" cx="50"/>';
+
+                //text string
+                svg += '<text id="' + circle + '-text" x="85" y="' + circles[circle] + '"></text>';
+            };
+
+        //close svg string
+        svg += "</svg>";
+
+        //add attribute legend svg to container
+        $(container).append(svg);
 
             return container;
         }
     });
 
     map.addControl(new LegendControl());
+
+    updateLegend(map, attributes[0]);
 };
 
 

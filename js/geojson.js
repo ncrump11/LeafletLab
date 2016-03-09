@@ -1,7 +1,7 @@
 //instantiate leaflet Map
 function createMap(){
     var map= L.map('map',{
-        center: [20, 0],
+        center: [25, 10],
         zoom: 2
     });
 
@@ -235,8 +235,8 @@ function createSequenceControls(map, attributes){
 
     map.addControl(new SequenceControl());
     
-    $('#reverse').html('<img src="img/reverse.png">');
-    $('#forward').html('<img src="img/forward.png">');
+    $('#reverse').html('<img src="img/newrev.png">');
+    $('#forward').html('<img src="img/newfor.png">');
 
 
     //set slider attributes

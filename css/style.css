@@ -1,7 +1,20 @@
 #map {
-    height: 400px;
-    width: 80%;
+    height: 500px;
+    width: 55%;
     display: inline-block;
+}
+#title {
+    font: bold 2em Georgia;
+    color: white;
+    text-align: center;
+    background-color: #DC143C
+}
+#subtitle {
+    height: 660px;
+    font: bold 1.6em Georgia;
+    color: white;
+    text-align: center;
+    background-color: rgba(0,0,0,0.8)
 }
 
 /*#panel {

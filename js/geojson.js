@@ -7,8 +7,8 @@ function createMap(){
 
     //add OSM base tilelayer
     //https://leaflet-extras.github.io/leaflet-providers/preview/
-    L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-    // attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png', {
+    attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
     getData(map);
@@ -24,14 +24,15 @@ function createPopup(properties, attribute, layer, radius){
 
     //replace the layer popup
     layer.bindPopup(popupContent, {
-    offset: new L.Point(0,-radius)
+    offset: new L.Point(0,-radius),
+    closeButton: false
     });
 };
 
 //calculate the radius of each proportional symbol
 function calcPropRadius(attValue) {
     //scale factor to adjust symbol size evenly
-    var scaleFactor = 35;
+    var scaleFactor = 60;
     //area based on attribute value and scale factor
     var area = attValue * scaleFactor;
     //radius calculated based on area
@@ -48,7 +49,7 @@ function pointToLayer(feature, latlng, attributes){
 
     var options = {
         // radius: 8,
-        fillColor: "#FF6347 ",
+        fillColor: "#DC143C ",
         color: "#FFFFFF",
         weight: 1,
         opacity: 1,
@@ -78,7 +79,7 @@ function pointToLayer(feature, latlng, attributes){
             mouseout: function(){
                 this.closePopup();
             },
-           
+           closeButton: false
         });
     return layer;
 };
@@ -121,7 +122,7 @@ function getCircleValues(map, attribute){
 function updateLegend(map, attribute){
     //create content for legend
     var year = attribute.split("(")[0];
-    var content = "Gas Price";
+    var content = "Price Per Gallon in " + year;
 
     //replace legend content
     $('#temporal-legend').html(content);
@@ -134,7 +135,7 @@ function updateLegend(map, attribute){
 
         //Step 3: assign the cy and r attributes
         $('#'+key).attr({
-            cy: 39 - radius,
+            cy: 49 - radius,
             r: radius
         });
         
@@ -170,10 +171,10 @@ function createLegend(map, attributes){
             //loop to add each circle and text to svg string
             for (var circle in circles){
                 //circle string
-                svg += '<circle class="legend-circle" id="' + circle + '" fill="#F47821" fill-opacity="0.8" stroke="#000000" cx="50"/>';
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#DC143C" fill-opacity="0.8" stroke="#FFFFFF" cx="60"/>';
 
                 //text string
-                svg += '<text id="' + circle + '-text" x="85" y="' + circles[circle] + '"></text>';
+                svg += '<text id="' + circle + '-text" fill="#FFFFFF" x="85" y="' + circles[circle] + '"></text>';
             };
 
         //close svg string
@@ -315,6 +316,8 @@ function updatePropSymbols(map, attribute){
             
         };
     });
+        //update sequence legend
+        updateLegend(map, attribute);
 };
 
  //retrieves data and places it on map

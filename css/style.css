@@ -1,6 +1,6 @@
 #map {
     height: 400px;
-    width: 100%;
+    width: 80%;
     display: inline-block;
 }
 
@@ -16,11 +16,11 @@
 .sequence-control-container {
     width: 350px;
     height: 30px;
-    background-color: rgba(255,255,255,0.8);
+    background-color: rgba(0,0,0,0.8);
     padding: 10px;
     line-height: 45px;
     text-align: center;
-    border: solid gray 1px;
+    border: white 1px;
 }
 
 .range-slider{
@@ -41,13 +41,15 @@
 
 #temporal-legend {
     font-weight: bold;
-    font-size: 1.3em;
+    font: 16px Georgia;
+    color: white;
+    font-size: 1.5em;
 }
 
 .legend-control-container {
-    width:150px;
-    height: 90px;
-    background-color: rgba(255,255,255,0.8);
-    border: solid gray 1px;  
+    width:160px;
+    height: 110px;
+    background-color: rgba(0,0,0,0.8);
+    border: white 5px;  
     text-align: center;
 }
